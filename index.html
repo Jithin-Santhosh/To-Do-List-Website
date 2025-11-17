@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List App</title>
+    <style>
+        :root {
+            --color-primary: #32b8c6;
+            --color-primary-hover: #2da6b3;
+            --color-background: #fcfcf9;
+            --color-surface: #ffffff;
+            --color-text: #134252;
+            --color-text-secondary: #626c7c;
+            --color-error: #c0152f;
+            --color-success: #218081;
+            --color-border: #5e5240;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fcfcf9 0%, #f5f5f5 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--color-surface);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--color-text);
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        #taskInput {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid rgba(94, 82, 64, 0.2);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--color-text);
+            background: #fafafa;
+            transition: border-color 0.3s;
+        }
+
+        #taskInput:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            background: var(--color-surface);
+        }
+
+        #taskInput::placeholder {
+            color: var(--color-text-secondary);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(50, 184, 198, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+        .task-item:hover {
+            background: #f5f5f5;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+            background: #f0f8f8;
+            border-left-color: var(--color-success);
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: var(--color-text-secondary);
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--color-primary);
+        }
+
+        .task-text {
+            flex: 1;
+            color: var(--color-text);
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        .delete-btn {
+            background: var(--color-error);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: #a01325;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .task-counter {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(94, 82, 64, 0.1);
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .counter-item {
+            text-align: center;
+        }
+
+        .counter-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--color-primary);
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 My Tasks</h1>
+            <p class="subtitle">Stay organized and get things done</p>
+        </div>
+
+        <div class="input-group">
+            <input 
+                type="text" 
+                id="taskInput" 
+                placeholder="Add a new task..." 
+                autocomplete="off"
+            >
+            <button class="btn" id="addBtn">Add</button>
+        </div>
+
+        <ul class="task-list" id="taskList"></ul>
+
+        <div id="emptyState" class="empty-state">
+            <div class="empty-state-icon">✨</div>
+            <p>No tasks yet. Add one to get started!</p>
+        </div>
+
+        <div class="task-counter">
+            <div class="counter-item">
+                <span class="counter-number" id="totalCount">0</span>
+                <span>Total</span>
+            </div>
+            <div class="counter-item">
+                <span class="counter-number" id="completedCount">0</span>
+                <span>Completed</span>
+            </div>
+            <div class="counter-item">
+                <span class="counter-number" id="pendingCount">0</span>
+                <span>Pending</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const taskInput = document.getElementById('taskInput');
+        const addBtn = document.getElementById('addBtn');
+        const taskList = document.getElementById('taskList');
+        const emptyState = document.getElementById('emptyState');
+        const totalCount = document.getElementById('totalCount');
+        const completedCount = document.getElementById('completedCount');
+        const pendingCount = document.getElementById('pendingCount');
+
+        // Initialize - Load tasks from localStorage
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        renderTasks();
+        updateCounters();
+
+        // Event Listeners
+        addBtn.addEventListener('click', addTask);
+        taskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+
+        // Add Task Function
+        function addTask() {
+            const taskText = taskInput.value.trim();
+
+            if (taskText === '') {
+                alert('Please enter a task!');
+                return;
+            }
+
+            const task = {
+                id: Date.now(),
+                text: taskText,
+                completed: false
+            };
+
+            tasks.push(task);
+            saveTasks();
+            renderTasks();
+            updateCounters();
+            taskInput.value = '';
+            taskInput.focus();
+        }
+
+        // Render Tasks
+        function renderTasks() {
+            taskList.innerHTML = '';
+
+            if (tasks.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            tasks.forEach((task) => {
+                const taskItem = document.createElement('li');
+                taskItem.className = `task-item ${task.completed ? 'completed' : ''}`;
+
+                taskItem.innerHTML = `
+                    <input 
+                        type="checkbox" 
+                        class="checkbox" 
+                        ${task.completed ? 'checked' : ''}
+                        onchange="toggleTask(${task.id})"
+                    >
+                    <span class="task-text">${escapeHtml(task.text)}</span>
+                    <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+                `;
+
+                taskList.appendChild(taskItem);
+            });
+        }
+
+        // Toggle Task Completion
+        function toggleTask(id) {
+            tasks = tasks.map((task) =>
+                task.id === id ? { ...task, completed: !task.completed } : task
+            );
+            saveTasks();
+            renderTasks();
+            updateCounters();
+        }
+
+        // Delete Task
+        function deleteTask(id) {
+            tasks = tasks.filter((task) => task.id !== id);
+            saveTasks();
+            renderTasks();
+            updateCounters();
+        }
+
+        // Update Counters
+        function updateCounters() {
+            const total = tasks.length;
+            const completed = tasks.filter((task) => task.completed).length;
+            const pending = total - completed;
+
+            totalCount.textContent = total;
+            completedCount.textContent = completed;
+            pendingCount.textContent = pending;
+        }
+
+        // Save Tasks to localStorage
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
